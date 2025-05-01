@@ -27,6 +27,14 @@ class Taak {
         this.isGroot = groot;
     }
 
+    public void getGrootteTaak() {
+        if (isGroot) {
+            System.out.println(naam + " is een grote taak.");
+        } else {
+            System.out.println(naam + " is geen grote taak.");
+        }
+    }
+
     public Gebruiker getToegewezenAan() {
         return toegewezenAan;
     }
@@ -35,9 +43,9 @@ class Taak {
         this.toegewezenAan = gebruiker;
     }
 }
-
-class Gebruiker {
-    private String naam;
+//Nieuwe klassen waar inheritance wordt gebruikt
+abstract class Gebruiker {
+    protected String naam;
 
     public Gebruiker(String naam) {
         this.naam = naam;
@@ -47,12 +55,34 @@ class Gebruiker {
         return naam;
     }
 
-    public void setNaam(String naam) {
-        this.naam = naam;
+    public abstract void getBeschrijving();
+}
+
+class Gezinslid extends Gebruiker {
+    public Gezinslid(String naam) {
+        super(naam);
     }
 
-    public String getBeschrijving() {
-        return "Gebruiker: " + naam;
+    @Override
+    public void getBeschrijving() {
+        String beschrijving = naam + " is een gezinslid";
+        System.out.println(beschrijving);
+    }
+}
+
+class Manager extends Gebruiker {
+    public Manager(String naam) {
+        super(naam);
+    }
+
+    @Override
+    public void getBeschrijving() {
+        String beschrijving = naam + " is een manager";
+        System.out.println(beschrijving);
+    }
+
+    public void wijzigTaak(Taak taak, boolean isGroot) {
+        taak.setGroot(isGroot);
     }
 }
 
@@ -103,19 +133,29 @@ class WeekSchema {
     }
 }
 
-public class Main {
-    public static void main(String[] args) {
-        Gebruiker Irma = new Gebruiker("Irma");
-        Gebruiker Kyran = new Gebruiker("Kyran");
-        Taak afwas = new Taak("Afwas", false);
-        afwas.setToegewezenAan(Kyran);
-        Taak stofzuigen = new Taak("Stofzuigen", true);
-        stofzuigen.setToegewezenAan(Irma);
-        Dag maandag = new Dag("Maandag");
-        maandag.voegTaakToe(afwas);
-        maandag.voegTaakToe(stofzuigen);
-        WeekSchema schema = new WeekSchema();
-        schema.voegDagToe(maandag);
-        schema.printOverzicht();
+    public class Main {
+        public static void main(String[] args) {
+            //Polymorfisme
+            Gebruiker Irma = new Manager("Irma");
+            Gebruiker Kyran = new Gezinslid("Kyran");
+            Irma.getBeschrijving();
+            Kyran.getBeschrijving();
+
+            Taak afwas = new Taak("Afwas", false);
+            afwas.setToegewezenAan(Kyran);
+            Taak stofzuigen = new Taak("Stofzuigen", true);
+            stofzuigen.setToegewezenAan(Irma);
+            Dag maandag = new Dag("Maandag");
+            maandag.voegTaakToe(afwas);
+            maandag.voegTaakToe(stofzuigen);
+            WeekSchema schema = new WeekSchema();
+            schema.voegDagToe(maandag);
+            schema.printOverzicht();
+
+            //Nieuwe tests
+            ((Manager) Irma).wijzigTaak(afwas, true);
+            afwas.getGrootteTaak();
+
+        }
     }
-}
+
